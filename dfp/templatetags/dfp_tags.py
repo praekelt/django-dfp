@@ -23,9 +23,10 @@ var node = document.getElementsByTagName('script')[0];
 node.parentNode.insertBefore(gads, node);
 })();
 
-googletag.pubads().enableSingleRequest(); 
-googletag.enableServices();
-
+googletag.cmd.push(function() {
+    googletag.pubads().enableSingleRequest(); 
+    googletag.enableServices();
+});
 </script>
     """
     return result
