@@ -5,6 +5,15 @@ Django Simple Autocomplete
 .. contents:: Contents
     :depth: 5
 
+Overview
+--------
+
+Google provides server side adds via its DFP service. This product is inspired
+by the code at
+http://support.google.com/dfp_sb/bin/answer.py?hl=en&answer=1651549. To keep
+the Django implementation as simple as possible this product changes the order
+of the Javascript from that page.
+
 Installation
 ------------
 
