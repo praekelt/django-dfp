@@ -1,8 +1,8 @@
 Changelog
 =========
 
-next
-----
+0.1.2
+-----
 #. Remove async script loading since it does not work.
 
 0.1.1
