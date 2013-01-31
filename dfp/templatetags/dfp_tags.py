@@ -7,29 +7,18 @@ from django import template
 register = template.Library()
 
 
-@register.simple_tag
-def dfp_header():
-    result = """
-<script type='text/javascript'>
-var googletag = googletag || {};
-googletag.cmd = googletag.cmd || [];
-(function() {
-var gads = document.createElement('script');
-gads.async = true;
-gads.type = 'text/javascript';
-var useSSL = 'https:' == document.location.protocol;
-gads.src = (useSSL ? 'https:' : 'http:') + 
-'//www.googletagservices.com/tag/js/gpt.js';
-var node = document.getElementsByTagName('script')[0];
-node.parentNode.insertBefore(gads, node);
-})();
-
+@register.simple_tag(takes_context=True)
+def dfp_header(context):
+    secure = context['request'].is_secure() and 's' or ''
+    result = """    
+<script type="text/javascript" src="http%s://www.googletagservices.com/tag/js/gpt.js"></script>
+<script type="text/javascript">
 googletag.cmd.push(function() {
     googletag.pubads().enableSingleRequest(); 
     googletag.enableServices();
 });
 </script>
-    """
+    """ % secure
     return result
 
 
