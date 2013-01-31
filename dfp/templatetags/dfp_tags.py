@@ -1,4 +1,5 @@
 from random import randint
+from types import ListType
 
 from django import template
 
@@ -47,21 +48,34 @@ def dfp_tag(parser, token):
 class DfpTagNode(template.Node):
 
     def __init__(self, slot_name, width, height, targeting_key, targeting_values):
-        self.slot_name = unicode(slot_name.strip("'\""))
-        self.width = int(width)
-        self.height = int(height)
-        self.targeting_key = unicode(targeting_key.strip("'\""))
-        self.targeting_values = [unicode(s.strip("'\"")) for s in targeting_values]
+        self.slot_name = template.Variable(slot_name)
+        self.width = template.Variable(width)
+        self.height = template.Variable(height)
+        self.targeting_key = template.Variable(targeting_key)
+        self.targeting_values = []        
+        for v in targeting_values:
+            self.targeting_values.append(template.Variable(v))
 
     def render(self, context):        
+        slot_name = self.slot_name.resolve(context)
+        width = self.width.resolve(context)
+        height = self.height.resolve(context)
+        targeting_key = self.targeting_key.resolve(context)
+        targeting_values = []
+        for v in self.targeting_values:
+            resolved = v.resolve(context)
+            if isinstance(resolved, ListType):
+                targeting_values.extend(resolved)
+            else:
+                targeting_values.append(resolved)
         rand_id = randint(0, 2000000000)
         di = {
             'rand_id': rand_id,            
-            'slot_name': self.slot_name, 
-            'width': self.width, 
-            'height': self.height, 
-            'targeting_key': self.targeting_key, 
-            'targeting_values': ', '.join(['"'+v+'"' for v in self.targeting_values])
+            'slot_name': slot_name, 
+            'width': width, 
+            'height': height, 
+            'targeting_key': targeting_key, 
+            'targeting_values': ', '.join(['"'+v+'"' for v in targeting_values])
         }
         if not hasattr(context, '_django_dfp'):
             setattr(context, '_django_dfp', [])
