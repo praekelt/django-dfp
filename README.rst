@@ -1,6 +1,6 @@
 Django Simple Autocomplete
 ==========================
-**App that provides tags to fetch Google DFP ads asynchronously in a single request.**
+**App that provides tags to fetch Google DFP ads in a single request.**
 
 .. contents:: Contents
     :depth: 5
