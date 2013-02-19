@@ -1,8 +1,8 @@
 Changelog
 =========
 
-next
-----
+0.2
+---
 #. Async script loading has been re-added.
 #. Deprecate the `dfp_header` tag and replace with `dfp_footer`. DFP will now work across all browsers.
 
