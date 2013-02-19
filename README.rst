@@ -24,8 +24,9 @@ Installation
 Usage
 -----
 
-Load `dfp_tags` in your template, eg. `{% load dfp_tags %}`. Call `{%
-dfp_header %}` once in the HEAD of your template.
+Load `dfp_tags` in your template with `{% load dfp_tags %}`. Call `{ %dfp_footer %}` 
+once near the end of your document body. You would typically call it just
+before the closing body tag.
 
 An example tag is
 
