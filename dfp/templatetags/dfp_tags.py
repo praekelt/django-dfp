@@ -45,11 +45,14 @@ def dfp_footer(context):
     googletag.cmd.push(function() {"""
 
     for di in getattr(context['request'], '_django_dfp', []):
-        result += """googletag.defineSlot('%(slot_name)s', [%(width)d, %(height)d], 'div-gpt-ad-%(rand_id)s').addService(googletag.pubads()).setTargeting('%(targeting_key)s', [%(targeting_values)s]);
+        result += """googletag.defineSlot('%(slot_name)s', [%(width)d, %(height)d], 'div-gpt-ad-%(rand_id)s').addService(googletag.pubads()).setTargeting('%(targeting_key)s', [%(targeting_values_param)s]);
 """ % di
 
+    # We can't use enableSingleRequest since that kills the ability to do
+    # subsequent ajax loads that contain DFP tags. Someday DFP may provide a
+    # disableSingleRequest method and then we can consider using it again.
     result += """
-googletag.pubads().enableSingleRequest(); 
+//googletag.pubads().enableSingleRequest(); 
 googletag.enableServices();"""
 
     for di in getattr(context['request'], '_django_dfp', []):
@@ -105,11 +108,19 @@ class DfpTagNode(template.Node):
             'width': width, 
             'height': height, 
             'targeting_key': targeting_key, 
-            'targeting_values': ', '.join(['"'+v+'"' for v in targeting_values])
+            'targeting_values_attr': '|'.join(targeting_values),
+            'targeting_values_param': ', '.join(['"'+v+'"' for v in targeting_values])
         }
         if not hasattr(context['request'], '_django_dfp'):
             setattr(context['request'], '_django_dfp', [])
         getattr(context['request'], '_django_dfp').append(di)
         return """
-<div id="div-gpt-ad-%(rand_id)s" style="width: %(width)dpx; height: %(height)dpx;">
+<div id="div-gpt-ad-%(rand_id)s" class="gpt-ad" 
+     style="width: %(width)dpx; height: %(height)dpx;" 
+     slot_name="%(slot_name)s" 
+     width="%(width)s" 
+     height="%(height)s" 
+     targeting_key="%(targeting_key)s" 
+     targeting_values="%(targeting_values_attr)s" 
+ >
 </div>""" % di

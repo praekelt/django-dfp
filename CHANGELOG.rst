@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.2.1
+-----
+#. Do not use enableSingleRequest method anymore since it destroys the ability to do subsequent DFP loads via ajax.
+
 0.2
 ---
 #. Async script loading has been re-added.
