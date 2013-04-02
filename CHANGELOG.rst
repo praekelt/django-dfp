@@ -1,6 +1,10 @@
 Changelog
 =========
 
+next
+----
+#. Scan for DFP div's with javascript. In practice this means DFP ads are now cacheable.
+
 0.2.1
 -----
 #. Do not use enableSingleRequest method anymore since it destroys the ability to do subsequent DFP loads via ajax.

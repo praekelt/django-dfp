@@ -42,24 +42,36 @@ def dfp_footer(context):
 </script>
 
 <script type="text/javascript">
-    googletag.cmd.push(function() {"""
+    googletag.cmd.push(function() {
 
-    for di in getattr(context['request'], '_django_dfp', []):
-        result += """googletag.defineSlot('%(slot_name)s', [%(width)d, %(height)d], 'div-gpt-ad-%(rand_id)s').addService(googletag.pubads()).setTargeting('%(targeting_key)s', [%(targeting_values_param)s]);
-""" % di
+    var arr = document.getElementsByTagName('div');
+    for (var i=0; i<arr.length; i++)
+    {
+        if (arr[i].className == 'gpt-ad')
+        {
+            var slot_name = arr[i].getAttribute('slot_name');
+            var id = arr[i].getAttribute('id');
+            googletag.defineSlot(slot_name, [300, 250], id).addService(googletag.pubads()).setTargeting('pos', ['MPU']);
+        }
+    }
 
-    # We can't use enableSingleRequest since that kills the ability to do
-    # subsequent ajax loads that contain DFP tags. Someday DFP may provide a
-    # disableSingleRequest method and then we can consider using it again.
-    result += """
-//googletag.pubads().enableSingleRequest(); 
-googletag.enableServices();"""
+    // We can't use enableSingleRequest since that kills the ability to do
+    // subsequent ajax loads that contain DFP tags. Someday DFP may provide a
+    // disableSingleRequest method and then we can consider using it again.
+    //googletag.pubads().enableSingleRequest();
 
-    for di in getattr(context['request'], '_django_dfp', []):
-        result += """googletag.cmd.push(function() { googletag.display('div-gpt-ad-%(rand_id)s'); });
-""" % di
+    googletag.enableServices();
 
-    result += """
+    var arr = document.getElementsByTagName('div');
+    for (var i=0; i<arr.length; i++)
+    {
+        if (arr[i].className == 'gpt-ad')
+        {
+            var id = arr[i].getAttribute('id');
+            googletag.cmd.push(function() { googletag.display(id); });
+        }
+    }
+
     });
 </script>"""
 
@@ -111,9 +123,6 @@ class DfpTagNode(template.Node):
             'targeting_values_attr': '|'.join(targeting_values),
             'targeting_values_param': ', '.join(['"'+v+'"' for v in targeting_values])
         }
-        if not hasattr(context['request'], '_django_dfp'):
-            setattr(context['request'], '_django_dfp', [])
-        getattr(context['request'], '_django_dfp').append(di)
         return """
 <div id="div-gpt-ad-%(rand_id)s" class="gpt-ad" 
      style="width: %(width)dpx; height: %(height)dpx;" 
