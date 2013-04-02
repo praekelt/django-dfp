@@ -1,8 +1,8 @@
 Changelog
 =========
 
-next
-----
+0.2.2
+-----
 #. Scan for DFP div's with javascript. In practice this means DFP ads are now cacheable.
 
 0.2.1
