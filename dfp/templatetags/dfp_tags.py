@@ -51,7 +51,11 @@ def dfp_footer(context):
         {
             var slot_name = arr[i].getAttribute('slot_name');
             var id = arr[i].getAttribute('id');
-            googletag.defineSlot(slot_name, [300, 250], id).addService(googletag.pubads()).setTargeting('pos', ['MPU']);
+            var width = parseInt(arr[i].getAttribute('width'));
+            var height = parseInt(arr[i].getAttribute('height'));
+            var targeting_key = arr[i].getAttribute('targeting_key');
+            var targeting_values = arr[i].getAttribute('targeting_values').split("|");
+            googletag.defineSlot(slot_name, [width, height], id).addService(googletag.pubads()).setTargeting(targeting_key, targeting_values);
         }
     }
 
