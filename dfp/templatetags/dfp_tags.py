@@ -130,7 +130,7 @@ class DfpTagNode(template.Node):
                 if isinstance(val, ListType):
                     vals.extend(val)
                 else:
-                    vals.append(val)
+                    vals.append(str(val))
                 vals = '|'.join(vals)
                 tags = 'targeting_key%d="%s"' % (key_no, key)
                 tags += ' targeting_values%d="%s"' % (key_no, vals)
