@@ -148,7 +148,6 @@ class DfpTagNode(template.Node):
             'targeting': ' '.join(targeting)
         }
 
-
         return """
 <div id="div-gpt-ad-%(rand_id)s" class="gpt-ad"
      style="width: %(width)dpx; height: %(height)dpx;"
