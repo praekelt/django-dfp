@@ -13,11 +13,11 @@ def dfp_header(context):
     warnings.warn("""Please migrate your templates to include {% dfp_footer %} \
 near the end of the document body. dfp_header is marked for deprecation.""")
     secure = context['request'].is_secure() and 's' or ''
-    result = """    
+    result = """
 <script type="text/javascript" src="http%s://www.googletagservices.com/tag/js/gpt.js"></script>
 <script type="text/javascript">
 googletag.cmd.push(function() {
-    googletag.pubads().enableSingleRequest(); 
+    googletag.pubads().enableSingleRequest();
     googletag.enableServices();
 });
 </script>
@@ -101,11 +101,11 @@ class DfpTagNode(template.Node):
         self.width = template.Variable(width)
         self.height = template.Variable(height)
         self.targeting_key = template.Variable(targeting_key)
-        self.targeting_values = []        
+        self.targeting_values = []
         for v in targeting_values:
             self.targeting_values.append(template.Variable(v))
 
-    def render(self, context):        
+    def render(self, context):
         slot_name = self.slot_name.resolve(context)
         width = self.width.resolve(context)
         height = self.height.resolve(context)
@@ -119,21 +119,21 @@ class DfpTagNode(template.Node):
                 targeting_values.append(resolved)
         rand_id = randint(0, 2000000000)
         di = {
-            'rand_id': rand_id,            
-            'slot_name': slot_name, 
-            'width': width, 
-            'height': height, 
-            'targeting_key': targeting_key, 
+            'rand_id': rand_id,
+            'slot_name': slot_name,
+            'width': width,
+            'height': height,
+            'targeting_key': targeting_key,
             'targeting_values_attr': '|'.join(targeting_values),
             'targeting_values_param': ', '.join(['"'+v+'"' for v in targeting_values])
         }
         return """
-<div id="div-gpt-ad-%(rand_id)s" class="gpt-ad" 
-     style="width: %(width)dpx; height: %(height)dpx;" 
-     slot_name="%(slot_name)s" 
-     width="%(width)s" 
-     height="%(height)s" 
-     targeting_key="%(targeting_key)s" 
-     targeting_values="%(targeting_values_attr)s" 
+<div id="div-gpt-ad-%(rand_id)s" class="gpt-ad"
+     style="width: %(width)dpx; height: %(height)dpx;"
+     slot_name="%(slot_name)s"
+     width="%(width)s"
+     height="%(height)s"
+     targeting_key="%(targeting_key)s"
+     targeting_values="%(targeting_values_attr)s"
  >
 </div>""" % di
