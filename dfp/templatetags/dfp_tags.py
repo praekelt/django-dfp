@@ -1,29 +1,11 @@
-from itertools import izip
 from random import randint
-from types import ListType
-import warnings
+from types import ListType, StringType
 
 from django import template
 
 
 register = template.Library()
 
-
-@register.simple_tag(takes_context=True)
-def dfp_header(context):
-    warnings.warn("""Please migrate your templates to include {% dfp_footer %} \
-near the end of the document body. dfp_header is marked for deprecation.""")
-    secure = context['request'].is_secure() and 's' or ''
-    result = """
-<script type="text/javascript" src="http%s://www.googletagservices.com/tag/js/gpt.js"></script>
-<script type="text/javascript">
-googletag.cmd.push(function() {
-    googletag.pubads().enableSingleRequest();
-    googletag.enableServices();
-});
-</script>
-    """ % secure
-    return result
 
 @register.simple_tag(takes_context=True)
 def dfp_footer(context):
@@ -45,6 +27,8 @@ def dfp_footer(context):
 <script type="text/javascript">
     googletag.cmd.push(function() {
 
+    var stack = new Array();
+    var reserved = ['slot_name', 'id', 'width', 'height', 'style', 'class'];
     var arr = document.getElementsByTagName('div');
     for (var i=0; i<arr.length; i++)
     {
@@ -54,16 +38,17 @@ def dfp_footer(context):
             var id = arr[i].getAttribute('id');
             var width = parseInt(arr[i].getAttribute('width'));
             var height = parseInt(arr[i].getAttribute('height'));
+            var slot = googletag.defineSlot(slot_name, [width, height], id).addService(googletag.pubads());
 
-            googletag.defineSlot(slot_name, [width, height], id).addService(googletag.pubads());
-
-            for (var attrs = 1; attrs <= arr[i].attributes.length; attrs++) {
-                var key = arr[i].getAttribute('targeting_key' + attrs);
-                if (key) {
-                    var targeting_values = arr[i].getAttribute('targeting_values' + attrs).split("|");
-                    googletag.pubads().setTargeting(key, targeting_values);
+            for (var j=0; j<arr[i].attributes.length; j++){
+                var attr = arr[i].attributes[j];
+                if (attr.name.indexOf('data-pair-') == 0){
+                    var key = attr.name.slice(10);
+                    var value = attr.value.split('|');
+                    slot.setTargeting(key, value);
                 }
             }
+            stack.push(slot);
         }
     }
 
@@ -84,6 +69,13 @@ def dfp_footer(context):
         }
     }
 
+    /* Not ready yet - ajacx reloads
+    (function where_am_i_worker(){
+        googletag.pubads().refresh(stack);
+        setTimeout(where_am_i_worker, 10000);
+    })();
+    */
+
     });
 </script>"""
 
@@ -93,67 +85,64 @@ def dfp_footer(context):
 @register.tag
 def dfp_tag(parser, token):
     tokens = token.split_contents()[1:]
-    if len(tokens) < 5:
+    if len(tokens) < 4:
         raise template.TemplateSyntaxError(
-            'dfp tag requires arguments slot_name, width, height, targeting_key, targeting_value1, targeting_key2 targeting_value2, ...'
+            'dfp tag requires arguments slot_name width height targeting_key_1="targeting_value_11",..,"targeting_value_12" ...'
         )
     li = tokens[:3]
-    pairs = tokens[3:]
-    # this will drop unmatched key value pairs
-    targeting = dict((key,val) for (key,val) in izip(pairs[::2],pairs[1::2]))
-    li.append(targeting)
-    return DfpTagNode(*li)
+    keyvals = {}
+    for l in tokens[3:]:
+        k, v = l.split('=')
+        keyvals[k] = v
+    return DfpTagNode(*li, **keyvals)
 
 
 class DfpTagNode(template.Node):
 
-    def __init__(self, slot_name, width, height, targeting):
+    def __init__(self, slot_name, width, height, **keyvals):
         self.slot_name = template.Variable(slot_name)
         self.width = template.Variable(width)
         self.height = template.Variable(height)
-        self.targeting = targeting
+        self.keyvals = {}
+        for k, v in keyvals.items():
+            self.keyvals[k] = template.Variable(v)
 
     def render(self, context):
+        # Resolve values
         slot_name = self.slot_name.resolve(context)
         width = self.width.resolve(context)
         height = self.height.resolve(context)
-        rand_id = randint(0, 2000000000)
-        key_no = 1
-        targeting = []
-        for key, val in self.targeting.iteritems():
+        pairs = {}
+        for k, v in self.keyvals.items():
             try:
-                key = template.Variable(key)
-                val = template.Variable(val)
-                key = key.resolve(context)
-                vals = []
-                val = val.resolve(context)
-                if isinstance(val, ListType):
-                    vals.extend(val)
-                else:
-                    vals.append(str(val))
-                vals = '|'.join(vals)
-                tags = 'targeting_key%d="%s"' % (key_no, key)
-                tags += ' targeting_values%d="%s"' % (key_no, vals)
-                targeting.append(tags)
+                resolved = v.resolve(context)
             except template.VariableDoesNotExist:
-                # if we can't resolve the var, ignore the pair
-                pass
-            key_no += 1
+                continue
+            if isinstance(resolved, StringType):
+                resolved = resolved.split(',')
+            elif not isinstance(resolved, ListType):
+                resolved = [resolved]
+            pairs[k] = resolved
 
+        # Prepare tag
+        rand_id = randint(0, 2000000000)
         di = {
             'rand_id': rand_id,
             'slot_name': slot_name,
             'width': width,
-            'height': height,
-            'targeting': ' '.join(targeting)
+            'height': height
         }
-
-        return """
+        result = """
 <div id="div-gpt-ad-%(rand_id)s" class="gpt-ad"
      style="width: %(width)dpx; height: %(height)dpx;"
      slot_name="%(slot_name)s"
      width="%(width)s"
      height="%(height)s"
-     %(targeting)s
- >
-</div>""" % di
+""" % di
+
+        # Append pairs
+        for k, v in pairs.items():
+            result += ' data-pair-%s="%s"' % (k, '|'.join(v))
+        result += "></div>"
+
+        return result

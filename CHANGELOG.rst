@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.3
+---
+#. Deprecate `dfp_header`.
+#. Allow arbitrary targeting keys and values to be passed to `{% dfp_tag %}` tag as key=value pairs.
+
 0.2.2
 -----
 #. Scan for DFP div's with javascript. In practice this means DFP ads are now cacheable.
@@ -24,5 +29,5 @@ Changelog
 
 0.1
 ---
-#. First release. 
+#. First release.
 
