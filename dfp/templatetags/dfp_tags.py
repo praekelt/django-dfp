@@ -105,7 +105,7 @@ class DfpTagNode(template.Node):
         self.height = template.Variable(height)
         self.keyvals = {}
         for k, v in keyvals.items():
-            self.keyvals[k] = template.Variable(v)
+            self.keyvals[template.Variable(k)] = template.Variable(v)
 
     def render(self, context):
         # Resolve values
@@ -115,14 +115,18 @@ class DfpTagNode(template.Node):
         pairs = {}
         for k, v in self.keyvals.items():
             try:
-                resolved = v.resolve(context)
+                k_resolved = k.resolve(context)
+            except template.VariableDoesNotExist:
+                k_resolved = k
+            try:
+                v_resolved = v.resolve(context)
             except template.VariableDoesNotExist:
                 continue
-            if isinstance(resolved, StringType):
-                resolved = resolved.split(',')
-            elif not isinstance(resolved, ListType):
-                resolved = [resolved]
-            pairs[k] = resolved
+            if isinstance(v_resolved, StringType):
+                v_resolved = v_resolved.split(',')
+            elif not isinstance(v_resolved, ListType):
+                v_resolved = [v_resolved]
+            pairs[k_resolved] = v_resolved
 
         # Prepare tag
         rand_id = randint(0, 2000000000)

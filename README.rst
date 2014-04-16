@@ -30,7 +30,10 @@ before the closing body tag.
 
 An example tag is
 
-    {% dfp_tag "/1234/travel" 300 250 "interests" "sports" "music" %}
+    {% dfp_tag "/1234/travel" 300 250 interests="sports,music" position="top" color=variable foo=bar %}
+
+String values are comma delimited. Note the lack of spaces around the comma.
+Both keys and values can be variables.
 
 You may call as many tags as you want. See http://support.google.com/dfp_sb/bin/answier.py?hl=en&answer=1651549 for more examples.
 
