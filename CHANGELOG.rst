@@ -1,6 +1,10 @@
 Changelog
 =========
 
+next
+----
+#. Allow targeting keys to be variables.
+
 0.3
 ---
 #. Deprecate `dfp_header`.
