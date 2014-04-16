@@ -1,8 +1,8 @@
 Changelog
 =========
 
-next
-----
+0.3.1
+-----
 #. Allow targeting keys to be variables.
 
 0.3
