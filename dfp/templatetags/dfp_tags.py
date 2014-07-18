@@ -57,6 +57,17 @@ def dfp_footer(context):
     // disableSingleRequest method and then we can consider using it again.
     //googletag.pubads().enableSingleRequest();
 
+    // Republish slotRenderEnded event because pubads disappears after
+    // enableServices.
+    googletag.pubads().addEventListener('slotRenderEnded', function(event){
+        var evt = new CustomEvent('DFPSlotRenderEnded', {
+            detail: {
+                dfp_event: event
+            }
+        });
+        document.dispatchEvent(evt);
+    });
+
     googletag.enableServices();
 
     var arr = document.getElementsByTagName('div');

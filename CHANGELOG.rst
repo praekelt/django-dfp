@@ -1,6 +1,10 @@
 Changelog
 =========
 
+next
+----
+#. Republish slotRenderEnded event as DFPSlotRenderEnded.
+
 0.3.1
 -----
 #. Allow targeting keys to be variables.
