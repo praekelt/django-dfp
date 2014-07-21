@@ -1,8 +1,8 @@
 Changelog
 =========
 
-next
-----
+0.3.2
+-----
 #. Republish slotRenderEnded event as DFPSlotRenderEnded.
 
 0.3.1
