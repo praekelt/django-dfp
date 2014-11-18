@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.3.3
+-----
+#. Change Django to django in setup.py.
+
 0.3.2
 -----
 #. Republish slotRenderEnded event as DFPSlotRenderEnded.
