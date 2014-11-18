@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-dfp',
-    version='0.3.2',
+    version='0.3.3',
     description='DFP implementation for Django',
     long_description = open('README.rst', 'r').read() + open('AUTHORS.rst', 'r').read() + open('CHANGELOG.rst', 'r').read(),
     author='Praekelt Foundation',
@@ -11,11 +11,11 @@ setup(
     url='http://github.com/praekelt/django-dfp',
     packages = find_packages(),
     install_requires = [
-        'Django',
+        'django',
     ],
     include_package_data=True,
     tests_require=[
-        'django-setuptest>=0.1.2',
+        'django-setuptest>=0.1.4',
     ],
     test_suite="setuptest.setuptest.SetupTestSuite",
     classifiers=[
