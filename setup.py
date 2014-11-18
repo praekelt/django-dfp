@@ -11,11 +11,11 @@ setup(
     url='http://github.com/praekelt/django-dfp',
     packages = find_packages(),
     install_requires = [
-        'Django',
+        'django',
     ],
     include_package_data=True,
     tests_require=[
-        'django-setuptest>=0.1.2',
+        'django-setuptest>=0.1.4',
     ],
     test_suite="setuptest.setuptest.SetupTestSuite",
     classifiers=[
