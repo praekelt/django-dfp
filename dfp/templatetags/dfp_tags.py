@@ -26,8 +26,20 @@ def dfp_footer(context):
 
 <script type="text/javascript">
     googletag.cmd.push(function() {
+    var mapping = googletag.sizeMapping().
+        addSize([2048, 1536], [1440, 1440]). // Retina
+        addSize([1536, 2048], [1440, 1440]). // Retina
+        addSize([1920, 1080], [960, 960]).   // HD
+        addSize([1080, 1920], [960, 960]).   // HD
+        addSize([1024, 768], [640, 640]).    // iPad 2
+        addSize([768, 1024], [640, 640]).    // iPad 2
+        addSize([960, 640], [360, 360]).     // iPhone 4
+        addSize([640, 960], [360, 360]).     // iPhone 4
+        addSize([0, 0], [360, 360]).         // Default
+        build();
 
     var stack = new Array();
+    var has_interstitial = false;
     var reserved = ['slot_name', 'id', 'width', 'height', 'style', 'class'];
     var arr = document.getElementsByTagName('div');
     for (var i=0; i<arr.length; i++)
@@ -38,7 +50,12 @@ def dfp_footer(context):
             var id = arr[i].getAttribute('id');
             var width = parseInt(arr[i].getAttribute('width'));
             var height = parseInt(arr[i].getAttribute('height'));
-            var slot = googletag.defineSlot(slot_name, [width, height], id).addService(googletag.pubads());
+            if (width > 2 && height > 2 && !has_interstitial) {
+                var slot = googletag.defineSlot(slot_name, [width, height], id).addService(googletag.pubads());
+            } else {
+                var slot = googletag.defineSlot(slot_name, [[360, 360], [640, 640], [960, 960], [1440, 1440]], id).defineSizeMapping(mapping).addService(googletag.pubads());
+                has_interstitial = true;
+            };
 
             for (var j=0; j<arr[i].attributes.length; j++){
                 var attr = arr[i].attributes[j];
