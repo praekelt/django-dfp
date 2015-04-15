@@ -9,88 +9,9 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def dfp_footer(context):
-    result = """
-<script type="text/javascript">
-    var googletag = googletag || {};
-    googletag.cmd = googletag.cmd || [];
-    (function() {
-        var gads = document.createElement("script");
-        gads.async = true;
-        gads.type = "text/javascript";
-        var useSSL = "https:" == document.location.protocol;
-        gads.src = (useSSL ? "https:" : "http:") + "//www.googletagservices.com/tag/js/gpt.js";
-        var node =document.getElementsByTagName("script")[0];
-        node.parentNode.insertBefore(gads, node);
-    })();
-</script>
-
-<script type="text/javascript">
-    googletag.cmd.push(function() {
-
-    var stack = new Array();
-    var reserved = ['slot_name', 'id', 'width', 'height', 'style', 'class'];
-    var arr = document.getElementsByTagName('div');
-    for (var i=0; i<arr.length; i++)
-    {
-        if (arr[i].className == 'gpt-ad')
-        {
-            var slot_name = arr[i].getAttribute('slot_name');
-            var id = arr[i].getAttribute('id');
-            var width = parseInt(arr[i].getAttribute('width'));
-            var height = parseInt(arr[i].getAttribute('height'));
-            var slot = googletag.defineSlot(slot_name, [width, height], id).addService(googletag.pubads());
-
-            for (var j=0; j<arr[i].attributes.length; j++){
-                var attr = arr[i].attributes[j];
-                if (attr.name.indexOf('data-pair-') == 0){
-                    var key = attr.name.slice(10);
-                    var value = attr.value.split('|');
-                    slot.setTargeting(key, value);
-                }
-            }
-            stack.push(slot);
-        }
-    }
-
-    // We can't use enableSingleRequest since that kills the ability to do
-    // subsequent ajax loads that contain DFP tags. Someday DFP may provide a
-    // disableSingleRequest method and then we can consider using it again.
-    //googletag.pubads().enableSingleRequest();
-
-    // Republish slotRenderEnded event because pubads disappears after
-    // enableServices.
-    googletag.pubads().addEventListener('slotRenderEnded', function(event){
-        var evt = new CustomEvent('DFPSlotRenderEnded', {
-            detail: {
-                dfp_event: event
-            }
-        });
-        document.dispatchEvent(evt);
-    });
-
-    googletag.enableServices();
-
-    var arr = document.getElementsByTagName('div');
-    for (var i=0; i<arr.length; i++)
-    {
-        if (arr[i].className == 'gpt-ad')
-        {
-            var id = arr[i].getAttribute('id');
-            googletag.cmd.push(function() { googletag.display(id); });
-        }
-    }
-
-    /* Not ready yet - ajacx reloads
-    (function where_am_i_worker(){
-        googletag.pubads().refresh(stack);
-        setTimeout(where_am_i_worker, 10000);
-    })();
-    */
-
-    });
-</script>"""
-
-    return result
+    t = template.loader.get_template('dfp/dfp_footer.html')
+    c = template.Context({})
+    return t.render(c)
 
 
 @register.tag
