@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.4
+---
+#. Move javascript to a template so it can be customized.
+
 0.3.3
 -----
 #. Change Django to django in setup.py.
