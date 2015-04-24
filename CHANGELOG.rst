@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.4.1
+-----
+#. Fix error in manifest.
+
 0.4
 ---
 #. Move javascript to a template so it can be customized.
