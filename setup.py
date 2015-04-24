@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-dfp',
-    version='0.4',
+    version='0.4.1',
     description='DFP implementation for Django',
     long_description = open('README.rst', 'r').read() + open('AUTHORS.rst', 'r').read() + open('CHANGELOG.rst', 'r').read(),
     author='Praekelt Foundation',
